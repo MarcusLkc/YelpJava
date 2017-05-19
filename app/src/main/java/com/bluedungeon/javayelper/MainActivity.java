@@ -1,9 +1,8 @@
 package com.bluedungeon.javayelper;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.view.ActionMode;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
 import com.facebook.CallbackManager;
@@ -31,9 +30,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(LoginResult loginResult) {
 
-                textView.setText(" Login Success \n" +
-                        loginResult.getAccessToken().getUserId()+
-                        "\n"+loginResult.getAccessToken().getToken());
+                Intent UserArea = new Intent(MainActivity.this,UserAreaActivity.class);
+                MainActivity.this.startActivity(UserArea);
 
             }
 
