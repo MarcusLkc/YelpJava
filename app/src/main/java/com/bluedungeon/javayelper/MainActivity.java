@@ -31,9 +31,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(LoginResult loginResult) {
 
-                textView.setText(" Login Success \n" +
-                        loginResult.getAccessToken().getUserId()+
-                        "\n"+loginResult.getAccessToken().getToken());
+//                textView.setText(" Login Success \n" +
+//                        loginResult.getAccessToken().getUserId()+
+//                        "\n"+loginResult.getAccessToken().getToken());
+                Intent loadYelp = new Intent (MainActivity.this, store.class);
+                        startActivity(loadYelp);
 
             }
 
