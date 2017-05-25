@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent YelpSwipe = new Intent(MainActivity.this,YelpSwipe.class);
                 MainActivity.this.startActivity(YelpSwipe);
 
+
             }
 
             @Override
