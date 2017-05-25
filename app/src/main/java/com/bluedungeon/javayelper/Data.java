@@ -12,9 +12,14 @@ public class Data {
 
     private String imagePath;
 
-    public Data(String imagePath, String description) {
+    private String website;
+
+    static int count = 0;
+
+    public Data(String imagePath, String description, String website) {
         this.imagePath = imagePath;
         this.description = description;
+        this.website = website;
     }
 
     public String getDescription() {
@@ -23,6 +28,13 @@ public class Data {
 
     public String getImagePath() {
         return imagePath;
+    }
+
+    public String getWebsite() { return website; }
+
+    static void increment()
+    {
+        count++;
     }
 
 }

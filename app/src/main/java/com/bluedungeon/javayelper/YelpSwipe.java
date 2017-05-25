@@ -2,8 +2,11 @@ package com.bluedungeon.javayelper;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
@@ -19,7 +22,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bluedungeon.javayelper.SingleShotLocationProvider.GPSCoordinates;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -53,6 +55,7 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
     private ArrayList<Data> array;
     private SwipeFlingAdapterView flingContainer;
     private int i;
+
     public float lat, longi;
 
     private GoogleApiClient mGoogleApiClient;
@@ -69,24 +72,10 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
 
         flingContainer = (SwipeFlingAdapterView) findViewById(R.id.frame);
 
-
-        array = new ArrayList<>();
-        array.add(new Data("https://www.androidtutorialpoint.com/wp-content/uploads/2016/11/Katrina-Kaif.jpg", "27"));
-        array.add(new Data("https://www.androidtutorialpoint.com/wp-content/uploads/2016/11/Emma-Watson.jpg", "27"));
-        array.add(new Data("https://www.androidtutorialpoint.com/wp-content/uploads/2016/11/Scarlett-Johansson.jpg", "22"));
-        array.add(new Data("https://www.androidtutorialpoint.com/wp-content/uploads/2016/11/Priyanka-Chopra.jpg", "19"));
-        array.add(new Data("https://www.androidtutorialpoint.com/wp-content/uploads/2016/11/Deepika-Padukone.jpg", "90"));
-        array.add(new Data("https://www.androidtutorialpoint.com/wp-content/uploads/2016/11/Anjelina-Jolie.jpg", "26"));
-        array.add(new Data("https://www.androidtutorialpoint.com/wp-content/uploads/2016/11/Aishwarya-Rai.jpg", "90"));
-
-        myAppAdapter = new MyAppAdapter(array, YelpSwipe.this);
-        flingContainer.setAdapter(myAppAdapter);
-        flingContainer.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
-            @Override
-            public void removeFirstObjectInAdapter() {
-
 //        ///// YELP
 
+        //get location first
+        this.getLocation();
 
         try {
 
@@ -104,63 +93,40 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         1);
-                Log.d("INSIDE","INSIDE PERMSISSON");
+                Log.d("INSIDE", "INSIDE PERMSISSON");
                 return;
             }
-
-=======
-            SingleShotLocationProvider.requestSingleUpdate(this,
-                    new SingleShotLocationProvider.LocationCallback() {
-                        @Override public void onNewLocationAvailable(GPSCoordinates location) {
-                            Log.d("Location", "my latitude is " + location.latitude);
-                            Log.d("Location", "my longitude is " + location.longitude);
-                            lat = location.latitude;
-                            longi = location.longitude;
-                    return;
-                        }
-                    });
 
 
             Log.d("Location", "LATITUDE " + lat);
             Log.d("Location", "LONGITUDE " + longi);
 
             YelpFusionApiFactory apiFactory = new YelpFusionApiFactory();
-            YelpFusionApi yelpFusionApi = apiFactory.createAPI("xyvegEYbrGqW0Oz88TepFg", "SpHHdrGjFrHTDpUcP2Ypv24GDrFemmBuWEuSXAezA7lSjnowMNJglyuWRnGgApWY");
+            final YelpFusionApi yelpFusionApi = apiFactory.createAPI("xyvegEYbrGqW0Oz88TepFg", "SpHHdrGjFrHTDpUcP2Ypv24GDrFemmBuWEuSXAezA7lSjnowMNJglyuWRnGgApWY");
             Map<String, String> params = new HashMap<>();
 
 // general params
             params.put("term", "food");
-//            params.put("location","New York");
-            params.put("latitude", "40.715168");
-            params.put("longitude", "-73.78001");
-//            params.put("latitude", Float.toString(lat));
-//            params.put("longitude", Float.toString(longi));
-
-
-                View view = flingContainer.getSelectedView();
-                view.findViewById(R.id.background).setAlpha(1);
-                view.findViewById(R.id.item_swipe_right_indicator).setAlpha(scrollProgressPercent < 0 ? -scrollProgressPercent : 0);
-                view.findViewById(R.id.item_swipe_left_indicator).setAlpha(scrollProgressPercent > 0 ? scrollProgressPercent : 0);
-            }
-        });
+            params.put("latitude", Float.toString(lat));
+            params.put("longitude", Float.toString(longi));
 
 
             Call<SearchResponse> call = yelpFusionApi.getBusinessSearch(params);
-//            Response<SearchResponse> response = call.execute();
 
             SearchResponse searchResponse = call.execute().body();
 
-            int totalNumberOfResult = searchResponse.getTotal();  // 3
+            int totalNumberOfResult = searchResponse.getTotal();
 
-            ArrayList<Business> businesses = searchResponse.getBusinesses();
-            String businessName = businesses.get(0).getName();  // "JapaCurry Truck"
+            final ArrayList<Business> businesses = searchResponse.getBusinesses();
+            String businessName = businesses.get(0).getName();
             String url = businesses.get(0).getImageUrl();
-            Double rating = businesses.get(0).getRating();  // 4.0
+            String website = businesses.get(0).getUrl();
+            Double rating = businesses.get(0).getRating();
             Log.v("THIS", Integer.toString(totalNumberOfResult));
             array = new ArrayList<>();
-           for (Business business: businesses){
-               array.add(new Data(business.getImageUrl(), business.getName()));
-           }
+            for (Business business : businesses) {
+                array.add(new Data(business.getImageUrl(), business.getName(), business.getUrl()));
+            }
 
 
             myAppAdapter = new MyAppAdapter(array, YelpSwipe.this);
@@ -175,17 +141,14 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
                 public void onLeftCardExit(Object dataObject) {
                     array.remove(0);
                     myAppAdapter.notifyDataSetChanged();
-                    //Do something on the left!
-                    //You also have access to the original object.
-                    //If you want to use it just cast it (String) dataObject
+                    Data.increment();
                 }
 
                 @Override
                 public void onRightCardExit(Object dataObject) {
-
-
-                View view = flingContainer.getSelectedView();
-                view.findViewById(R.id.background).setAlpha(1);
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(businesses.get(Data.count).getUrl()));
+                    startActivity(browserIntent);
+                    Data.increment();
 
                     array.remove(0);
                     myAppAdapter.notifyDataSetChanged();
@@ -194,10 +157,34 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
                 @Override
                 public void onAdapterAboutToEmpty(int itemsInAdapter) {
                     // Ask for more data here
-                    array.add(new Data("https://www.androidtutorialpoint.com/wp-content/uploads/2016/11/Katrina-Kaif.jpg", "Hi I am Katrina Kaif. Wanna chat with me ?. \n" +
-                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."));
-                    array.add(new Data("https://www.androidtutorialpoint.com/wp-content/uploads/2016/11/Katrina-Kaif.jpg", "Hi I am Katrina Kaif. Wanna chat with me ?. \n" +
-                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."));
+                    Map<String, String> params = new HashMap<>();
+
+// general params
+                    params.put("term", "food");
+                    params.put("latitude", Float.toString(lat));
+                    params.put("longitude", Float.toString(longi));
+
+
+                    Call<SearchResponse> call = yelpFusionApi.getBusinessSearch(params);
+
+                    SearchResponse searchResponse = null;
+                    try {
+                        searchResponse = call.execute().body();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    int totalNumberOfResult = searchResponse.getTotal();
+
+                    ArrayList<Business> businesses = searchResponse.getBusinesses();
+                    String businessName = businesses.get(0).getName();
+                    String url = businesses.get(0).getImageUrl();
+                    Double rating = businesses.get(0).getRating();
+                    Log.v("THIS", Integer.toString(totalNumberOfResult));
+                    array = new ArrayList<>();
+                    for (Business business : businesses) {
+                        array.add(new Data(business.getImageUrl(), business.getName(), business.getUrl()));
+                    }
 
 
                 }
@@ -226,12 +213,39 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
             });
 
 
-        }catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
 
+    }
 
+    public void getLocation() {
+        LocationManager locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        boolean network_enabled = locManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        Location location;
+
+        if (network_enabled) {
+
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            location = locManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+            if (location != null) {
+                this.longi = (float) location.getLongitude();
+                this.lat = (float) location.getLatitude();
+            }
+        }
     }
 
     public void onRequestPermissionsResult(int requestCode,
@@ -239,11 +253,15 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
                                            int[] grantResults) {
         Log.v("Inside request", "inside request");
         if (requestCode == 1) {
-            if(grantResults.length == 1
+            if (grantResults.length == 1
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // We can now safely use the API we requested access to
-                Location myLocation =
-                        LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    Location myLocation =
+                            LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+                    return;
+                }
+
             } else {
                 // Permission was denied or request was cancelled
             }
@@ -358,8 +376,7 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
                 viewHolder = (ViewHolder) convertView.getTag();
             }
 
-            viewHolder.DataText.setText(parkingList.get(position).getDescription() + "");
-
+            viewHolder.bookText.setText(parkingList.get(position).getDescription());
             Glide.with(YelpSwipe.this).load(parkingList.get(position).getImagePath()).into(viewHolder.cardImage);
 
             return rowView;
