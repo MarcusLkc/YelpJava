@@ -75,9 +75,11 @@
                     android:gravity="left"
                     android:padding="4dp"
                     android:textColor="#787878"
-                    android:textSize="16sp"
-                    tools:text="" />
+                    android:textSize="20sp"
+                    tools:text="SOME TEXT" />
             </ScrollView>
+
+
         </LinearLayout>
 
     </LinearLayout>
