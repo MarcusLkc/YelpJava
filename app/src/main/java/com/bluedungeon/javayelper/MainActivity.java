@@ -3,6 +3,8 @@ package com.bluedungeon.javayelper;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.facebook.AccessToken;
@@ -18,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     LoginButton loginButton;
     TextView textView;
     CallbackManager callbackManager;
+    Button skipbutton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,9 +32,17 @@ public class MainActivity extends AppCompatActivity {
 
         }
         setContentView(R.layout.activity_main);
+        skipbutton = (Button)findViewById(R.id.bskip);
         loginButton = (LoginButton)findViewById(R.id.fb_login_bn);
         textView = (TextView)findViewById(R.id.textView);
         callbackManager = CallbackManager.Factory.create();
+
+        skipbutton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent YelpSwipe = new Intent(MainActivity.this,YelpSwipe.class);
+                MainActivity.this.startActivity(YelpSwipe);
+            }
+        });
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -65,8 +76,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Intent CoolSwipe = new Intent(MainActivity.this,YelpSwipe.class);
-        MainActivity.this.startActivity(CoolSwipe);
+
 
     }
 }

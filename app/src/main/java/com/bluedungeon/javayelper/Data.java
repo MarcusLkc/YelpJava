@@ -5,9 +5,6 @@ package com.bluedungeon.javayelper;
  */
 
 
-/**
- * Created by navneet on 20/11/16.
- */
 
 public class Data {
 
