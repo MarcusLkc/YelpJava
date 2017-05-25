@@ -1,10 +1,5 @@
 package com.bluedungeon.javayelper;
 
-/**
- * Created by fdsale on 5/20/17.
- */
-
-
 
 public class Data {
 

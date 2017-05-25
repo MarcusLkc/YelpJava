@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
@@ -69,24 +70,10 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
 
         flingContainer = (SwipeFlingAdapterView) findViewById(R.id.frame);
 
-
-        array = new ArrayList<>();
-        array.add(new Data("https://www.androidtutorialpoint.com/wp-content/uploads/2016/11/Katrina-Kaif.jpg", "27"));
-        array.add(new Data("https://www.androidtutorialpoint.com/wp-content/uploads/2016/11/Emma-Watson.jpg", "27"));
-        array.add(new Data("https://www.androidtutorialpoint.com/wp-content/uploads/2016/11/Scarlett-Johansson.jpg", "22"));
-        array.add(new Data("https://www.androidtutorialpoint.com/wp-content/uploads/2016/11/Priyanka-Chopra.jpg", "19"));
-        array.add(new Data("https://www.androidtutorialpoint.com/wp-content/uploads/2016/11/Deepika-Padukone.jpg", "90"));
-        array.add(new Data("https://www.androidtutorialpoint.com/wp-content/uploads/2016/11/Anjelina-Jolie.jpg", "26"));
-        array.add(new Data("https://www.androidtutorialpoint.com/wp-content/uploads/2016/11/Aishwarya-Rai.jpg", "90"));
-
-        myAppAdapter = new MyAppAdapter(array, YelpSwipe.this);
-        flingContainer.setAdapter(myAppAdapter);
-        flingContainer.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
-            @Override
-            public void removeFirstObjectInAdapter() {
-
 //        ///// YELP
 
+        //get location first
+        this.getLocation();
 
         try {
 
@@ -108,18 +95,6 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
                 return;
             }
 
-=======
-            SingleShotLocationProvider.requestSingleUpdate(this,
-                    new SingleShotLocationProvider.LocationCallback() {
-                        @Override public void onNewLocationAvailable(GPSCoordinates location) {
-                            Log.d("Location", "my latitude is " + location.latitude);
-                            Log.d("Location", "my longitude is " + location.longitude);
-                            lat = location.latitude;
-                            longi = location.longitude;
-                    return;
-                        }
-                    });
-
 
             Log.d("Location", "LATITUDE " + lat);
             Log.d("Location", "LONGITUDE " + longi);
@@ -130,37 +105,25 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
 
 // general params
             params.put("term", "food");
-//            params.put("location","New York");
-            params.put("latitude", "40.715168");
-            params.put("longitude", "-73.78001");
-//            params.put("latitude", Float.toString(lat));
-//            params.put("longitude", Float.toString(longi));
-
-
-                View view = flingContainer.getSelectedView();
-                view.findViewById(R.id.background).setAlpha(1);
-                view.findViewById(R.id.item_swipe_right_indicator).setAlpha(scrollProgressPercent < 0 ? -scrollProgressPercent : 0);
-                view.findViewById(R.id.item_swipe_left_indicator).setAlpha(scrollProgressPercent > 0 ? scrollProgressPercent : 0);
-            }
-        });
+            params.put("latitude", Float.toString(lat));
+            params.put("longitude", Float.toString(longi));
 
 
             Call<SearchResponse> call = yelpFusionApi.getBusinessSearch(params);
-//            Response<SearchResponse> response = call.execute();
 
             SearchResponse searchResponse = call.execute().body();
 
-            int totalNumberOfResult = searchResponse.getTotal();  // 3
+            int totalNumberOfResult = searchResponse.getTotal();
 
             ArrayList<Business> businesses = searchResponse.getBusinesses();
-            String businessName = businesses.get(0).getName();  // "JapaCurry Truck"
+            String businessName = businesses.get(0).getName();
             String url = businesses.get(0).getImageUrl();
-            Double rating = businesses.get(0).getRating();  // 4.0
+            Double rating = businesses.get(0).getRating();
             Log.v("THIS", Integer.toString(totalNumberOfResult));
             array = new ArrayList<>();
-           for (Business business: businesses){
-               array.add(new Data(business.getImageUrl(), business.getName()));
-           }
+            for (Business business: businesses){
+                array.add(new Data(business.getImageUrl(), business.getName()));
+            }
 
 
             myAppAdapter = new MyAppAdapter(array, YelpSwipe.this);
@@ -183,10 +146,6 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
                 @Override
                 public void onRightCardExit(Object dataObject) {
 
-
-                View view = flingContainer.getSelectedView();
-                view.findViewById(R.id.background).setAlpha(1);
-
                     array.remove(0);
                     myAppAdapter.notifyDataSetChanged();
                 }
@@ -195,10 +154,9 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
                 public void onAdapterAboutToEmpty(int itemsInAdapter) {
                     // Ask for more data here
                     array.add(new Data("https://www.androidtutorialpoint.com/wp-content/uploads/2016/11/Katrina-Kaif.jpg", "Hi I am Katrina Kaif. Wanna chat with me ?. \n" +
-                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."));
+                            "Some Lady"));
                     array.add(new Data("https://www.androidtutorialpoint.com/wp-content/uploads/2016/11/Katrina-Kaif.jpg", "Hi I am Katrina Kaif. Wanna chat with me ?. \n" +
-                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."));
-
+                            "Some Lady"));
 
                 }
 
@@ -232,6 +190,24 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
 
 
 
+    }
+
+    public void getLocation(){
+        LocationManager locManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+
+        boolean network_enabled = locManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        Location location;
+
+        if(network_enabled){
+
+            location = locManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+            if(location!=null){
+                this.longi = (float)location.getLongitude();
+                this.lat = (float)location.getLatitude();
+            }
+        }
     }
 
     public void onRequestPermissionsResult(int requestCode,
@@ -358,8 +334,7 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
                 viewHolder = (ViewHolder) convertView.getTag();
             }
 
-            viewHolder.DataText.setText(parkingList.get(position).getDescription() + "");
-
+            viewHolder.bookText.setText(parkingList.get(position).getDescription());
             Glide.with(YelpSwipe.this).load(parkingList.get(position).getImagePath()).into(viewHolder.cardImage);
 
             return rowView;
