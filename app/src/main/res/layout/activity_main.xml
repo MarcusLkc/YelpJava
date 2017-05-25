@@ -8,6 +8,7 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
     android:paddingTop="16dp"
+    android:background="@drawable/cof"
     tools:context="com.bluedungeon.javayelper.MainActivity">
 
     <TextView
@@ -16,7 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
         android:gravity="center"
-        android:text="Log in Status"
+        android:text=""
         android:textStyle="bold" />
 
     <com.facebook.login.widget.LoginButton
@@ -24,4 +25,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true" />
+
+    <Button
+        android:id="@+id/bskip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/fb_login_bn"
+        android:layout_alignLeft="@+id/fb_login_bn"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/fb_login_bn"
+        android:layout_alignStart="@+id/fb_login_bn"
+        android:color="#45294F"
+        android:layout_marginBottom="66dp"
+        android:text="Skip Social =(" />
 </RelativeLayout>

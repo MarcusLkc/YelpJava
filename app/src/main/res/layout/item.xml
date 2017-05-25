@@ -52,8 +52,8 @@
 
             <ImageView
                 android:id="@+id/cardImage"
-                android:layout_width="400dp"
-                android:layout_height="400dp"
+                android:layout_width="360dp"
+                android:layout_height="420dp"
                 android:padding="4dp"
                 android:scaleType="centerCrop" />
         </FrameLayout>
@@ -74,9 +74,17 @@
                     android:layout_height="wrap_content"
                     android:gravity="left"
                     android:padding="4dp"
+
+                    android:textSize="12sp"
+                    android:background="@android:color/white"
+                    android:alpha="1"
+                    tools:text="Age" />
+
+
                     android:textColor="#787878"
                     android:textSize="20sp"
                     tools:text="SOME TEXT" />
+
             </ScrollView>
 
 

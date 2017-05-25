@@ -69,7 +69,24 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
 
         flingContainer = (SwipeFlingAdapterView) findViewById(R.id.frame);
 
+
+        array = new ArrayList<>();
+        array.add(new Data("https://www.androidtutorialpoint.com/wp-content/uploads/2016/11/Katrina-Kaif.jpg", "27"));
+        array.add(new Data("https://www.androidtutorialpoint.com/wp-content/uploads/2016/11/Emma-Watson.jpg", "27"));
+        array.add(new Data("https://www.androidtutorialpoint.com/wp-content/uploads/2016/11/Scarlett-Johansson.jpg", "22"));
+        array.add(new Data("https://www.androidtutorialpoint.com/wp-content/uploads/2016/11/Priyanka-Chopra.jpg", "19"));
+        array.add(new Data("https://www.androidtutorialpoint.com/wp-content/uploads/2016/11/Deepika-Padukone.jpg", "90"));
+        array.add(new Data("https://www.androidtutorialpoint.com/wp-content/uploads/2016/11/Anjelina-Jolie.jpg", "26"));
+        array.add(new Data("https://www.androidtutorialpoint.com/wp-content/uploads/2016/11/Aishwarya-Rai.jpg", "90"));
+
+        myAppAdapter = new MyAppAdapter(array, YelpSwipe.this);
+        flingContainer.setAdapter(myAppAdapter);
+        flingContainer.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
+            @Override
+            public void removeFirstObjectInAdapter() {
+
 //        ///// YELP
+
 
         try {
 
@@ -91,6 +108,7 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
                 return;
             }
 
+=======
             SingleShotLocationProvider.requestSingleUpdate(this,
                     new SingleShotLocationProvider.LocationCallback() {
                         @Override public void onNewLocationAvailable(GPSCoordinates location) {
@@ -101,6 +119,7 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
                     return;
                         }
                     });
+
 
             Log.d("Location", "LATITUDE " + lat);
             Log.d("Location", "LONGITUDE " + longi);
@@ -116,6 +135,14 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
             params.put("longitude", "-73.78001");
 //            params.put("latitude", Float.toString(lat));
 //            params.put("longitude", Float.toString(longi));
+
+
+                View view = flingContainer.getSelectedView();
+                view.findViewById(R.id.background).setAlpha(1);
+                view.findViewById(R.id.item_swipe_right_indicator).setAlpha(scrollProgressPercent < 0 ? -scrollProgressPercent : 0);
+                view.findViewById(R.id.item_swipe_left_indicator).setAlpha(scrollProgressPercent > 0 ? scrollProgressPercent : 0);
+            }
+        });
 
 
             Call<SearchResponse> call = yelpFusionApi.getBusinessSearch(params);
@@ -155,6 +182,10 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
 
                 @Override
                 public void onRightCardExit(Object dataObject) {
+
+
+                View view = flingContainer.getSelectedView();
+                view.findViewById(R.id.background).setAlpha(1);
 
                     array.remove(0);
                     myAppAdapter.notifyDataSetChanged();
@@ -327,6 +358,7 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
                 viewHolder = (ViewHolder) convertView.getTag();
             }
 
+            viewHolder.DataText.setText(parkingList.get(position).getDescription() + "");
 
             Glide.with(YelpSwipe.this).load(parkingList.get(position).getImagePath()).into(viewHolder.cardImage);
 

@@ -53,8 +53,6 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
-        <activity android:name=".UserAreaActivity" />
-        <activity android:name=".Swipe" />
         <activity android:name=".YelpSwipe"></activity>
     </application>
 
