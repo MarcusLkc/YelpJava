@@ -1,11 +1,11 @@
 package com.bluedungeon.javayelper;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.view.ActionMode;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -23,6 +23,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
+        if(AccessToken.getCurrentAccessToken() != null){
+            Intent YelpSwipe2 = new Intent(MainActivity.this,YelpSwipe.class);
+            MainActivity.this.startActivity(YelpSwipe2);
+
+        }
         setContentView(R.layout.activity_main);
         loginButton = (LoginButton)findViewById(R.id.fb_login_bn);
         textView = (TextView)findViewById(R.id.textView);
@@ -31,11 +36,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(LoginResult loginResult) {
 
-//                textView.setText(" Login Success \n" +
-//                        loginResult.getAccessToken().getUserId()+
-//                        "\n"+loginResult.getAccessToken().getToken());
-                Intent loadYelp = new Intent (MainActivity.this, store.class);
-                        startActivity(loadYelp);
+                Intent YelpSwipe = new Intent(MainActivity.this,YelpSwipe.class);
+                MainActivity.this.startActivity(YelpSwipe);
+
 
             }
 
@@ -56,5 +59,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         callbackManager.onActivityResult(requestCode,resultCode,data);
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Intent CoolSwipe = new Intent(MainActivity.this,YelpSwipe.class);
+        MainActivity.this.startActivity(CoolSwipe);
+
     }
 }

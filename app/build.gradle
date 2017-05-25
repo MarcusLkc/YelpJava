@@ -1,12 +1,20 @@
 apply plugin: 'com.android.application'
 
 android {
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/LICENSE.txt'
+    }
     compileSdkVersion 25
     buildToolsVersion "25.0.1"
     defaultConfig {
         applicationId "com.viralandroid.facebookandroidintegration"
         minSdkVersion 15
         targetSdkVersion 25
+        multiDexEnabled = true
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -23,14 +31,24 @@ repositories {
     mavenCentral()
 }
 
+
+
 dependencies {
-    compile 'com.facebook.android:facebook-android-sdk:4.18.0'
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.0.1'
     compile 'com.facebook.android:facebook-android-sdk:4.18.0'
     compile 'io.github.ranga543:yelp-fusion-client:0.1.2'
+
+    compile 'com.lorentzos.swipecards:library:1.0.9@aar'
+    compile 'com.facebook.android:facebook-android-sdk:4.18.0'
+    compile 'com.jakewharton:butterknife:5.1.2'
+    compile 'com.github.bumptech.glide:glide:3.5.1'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.android.support:support-annotations:25.3.1'
+    compile 'com.google.android.gms:play-services:10.2.6'
     testCompile 'junit:junit:4.12'
+
+    compile 'com.google.android.gms:play-services-location:8.1.0'
 }
