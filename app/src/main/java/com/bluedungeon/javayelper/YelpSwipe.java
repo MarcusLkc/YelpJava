@@ -121,9 +121,9 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
             Double rating = businesses.get(0).getRating();
             Log.v("THIS", Integer.toString(totalNumberOfResult));
             array = new ArrayList<>();
-           for (Business business: businesses){
-               array.add(new Data(business.getImageUrl(), business.getName()));
-           }
+            for (Business business: businesses){
+                array.add(new Data(business.getImageUrl(), business.getName()));
+            }
 
 
             myAppAdapter = new MyAppAdapter(array, YelpSwipe.this);
@@ -154,10 +154,9 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
                 public void onAdapterAboutToEmpty(int itemsInAdapter) {
                     // Ask for more data here
                     array.add(new Data("https://www.androidtutorialpoint.com/wp-content/uploads/2016/11/Katrina-Kaif.jpg", "Hi I am Katrina Kaif. Wanna chat with me ?. \n" +
-                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."));
+                            "Some Lady"));
                     array.add(new Data("https://www.androidtutorialpoint.com/wp-content/uploads/2016/11/Katrina-Kaif.jpg", "Hi I am Katrina Kaif. Wanna chat with me ?. \n" +
-                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."));
-
+                            "Some Lady"));
 
                 }
 
@@ -335,7 +334,7 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
                 viewHolder = (ViewHolder) convertView.getTag();
             }
 
-
+            viewHolder.bookText.setText(parkingList.get(position).getDescription());
             Glide.with(YelpSwipe.this).load(parkingList.get(position).getImagePath()).into(viewHolder.cardImage);
 
             return rowView;
