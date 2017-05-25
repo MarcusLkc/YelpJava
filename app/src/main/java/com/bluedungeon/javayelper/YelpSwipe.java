@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
@@ -71,6 +72,9 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
 
 //        ///// YELP
 
+        //get location first
+        this.getLocation();
+
         try {
 
 
@@ -91,16 +95,6 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
                 return;
             }
 
-            SingleShotLocationProvider.requestSingleUpdate(this,
-                    new SingleShotLocationProvider.LocationCallback() {
-                        @Override public void onNewLocationAvailable(GPSCoordinates location) {
-                            Log.d("Location", "my latitude is " + location.latitude);
-                            Log.d("Location", "my longitude is " + location.longitude);
-                            lat = location.latitude;
-                            longi = location.longitude;
-                    return;
-                        }
-                    });
 
             Log.d("Location", "LATITUDE " + lat);
             Log.d("Location", "LONGITUDE " + longi);
@@ -111,24 +105,20 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
 
 // general params
             params.put("term", "food");
-//            params.put("location","New York");
-            params.put("latitude", "40.715168");
-            params.put("longitude", "-73.78001");
-//            params.put("latitude", Float.toString(lat));
-//            params.put("longitude", Float.toString(longi));
+            params.put("latitude", Float.toString(lat));
+            params.put("longitude", Float.toString(longi));
 
 
             Call<SearchResponse> call = yelpFusionApi.getBusinessSearch(params);
-//            Response<SearchResponse> response = call.execute();
 
             SearchResponse searchResponse = call.execute().body();
 
-            int totalNumberOfResult = searchResponse.getTotal();  // 3
+            int totalNumberOfResult = searchResponse.getTotal();
 
             ArrayList<Business> businesses = searchResponse.getBusinesses();
-            String businessName = businesses.get(0).getName();  // "JapaCurry Truck"
+            String businessName = businesses.get(0).getName();
             String url = businesses.get(0).getImageUrl();
-            Double rating = businesses.get(0).getRating();  // 4.0
+            Double rating = businesses.get(0).getRating();
             Log.v("THIS", Integer.toString(totalNumberOfResult));
             array = new ArrayList<>();
            for (Business business: businesses){
@@ -201,6 +191,24 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
 
 
 
+    }
+
+    public void getLocation(){
+        LocationManager locManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+
+        boolean network_enabled = locManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        Location location;
+
+        if(network_enabled){
+
+            location = locManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+            if(location!=null){
+                this.longi = (float)location.getLongitude();
+                this.lat = (float)location.getLatitude();
+            }
+        }
     }
 
     public void onRequestPermissionsResult(int requestCode,
