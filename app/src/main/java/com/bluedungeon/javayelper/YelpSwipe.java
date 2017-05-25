@@ -1,5 +1,6 @@
 package com.bluedungeon.javayelper;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -52,6 +53,7 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
     private ArrayList<Data> array;
     private SwipeFlingAdapterView flingContainer;
     private int i;
+    public float lat, longi;
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -68,7 +70,7 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
         flingContainer = (SwipeFlingAdapterView) findViewById(R.id.frame);
 
 //        ///// YELP
-        YelpFusionApiFactory apiFactory = new YelpFusionApiFactory();
+
         try {
 
 
@@ -79,41 +81,41 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
                     .build();
             mGoogleApiClient.connect();
 
-            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+                // Check Permissions Now
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        1);
+                Log.d("INSIDE","INSIDE PERMSISSON");
                 return;
             }
-            Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                    mGoogleApiClient);
 
-                String a = Double.toString(mLastLocation.getLatitude());
-                String b = Double.toString(mLastLocation.getLongitude());
-
-            //
             SingleShotLocationProvider.requestSingleUpdate(this,
                     new SingleShotLocationProvider.LocationCallback() {
                         @Override public void onNewLocationAvailable(GPSCoordinates location) {
-                            Log.d("Location", "my location is " + location.toString());
+                            Log.d("Location", "my latitude is " + location.latitude);
+                            Log.d("Location", "my longitude is " + location.longitude);
+                            lat = location.latitude;
+                            longi = location.longitude;
+                    return;
                         }
                     });
-            //
 
+            Log.d("Location", "LATITUDE " + lat);
+            Log.d("Location", "LONGITUDE " + longi);
+
+            YelpFusionApiFactory apiFactory = new YelpFusionApiFactory();
             YelpFusionApi yelpFusionApi = apiFactory.createAPI("xyvegEYbrGqW0Oz88TepFg", "SpHHdrGjFrHTDpUcP2Ypv24GDrFemmBuWEuSXAezA7lSjnowMNJglyuWRnGgApWY");
             Map<String, String> params = new HashMap<>();
 
 // general params
-            params.put("term", "indian food");
+            params.put("term", "food");
 //            params.put("location","New York");
-            params.put("latitude", "40.581140");
-            params.put("longitude", "-111.914184");
-//            params.put("latitude", a);
-//            params.put("longitude", b);
+            params.put("latitude", "40.715168");
+            params.put("longitude", "-73.78001");
+//            params.put("latitude", Float.toString(lat));
+//            params.put("longitude", Float.toString(longi));
 
 
             Call<SearchResponse> call = yelpFusionApi.getBusinessSearch(params);
@@ -195,6 +197,25 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
 
         }catch (IOException e) {
             e.printStackTrace();
+        }
+
+
+
+    }
+
+    public void onRequestPermissionsResult(int requestCode,
+                                           String[] permissions,
+                                           int[] grantResults) {
+        Log.v("Inside request", "inside request");
+        if (requestCode == 1) {
+            if(grantResults.length == 1
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // We can now safely use the API we requested access to
+                Location myLocation =
+                        LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            } else {
+                // Permission was denied or request was cancelled
+            }
         }
     }
 
