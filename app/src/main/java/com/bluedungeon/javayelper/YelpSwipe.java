@@ -117,6 +117,7 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
 
             int totalNumberOfResult = searchResponse.getTotal();
 
+
             final ArrayList<Business> businesses = searchResponse.getBusinesses();
             String businessName = businesses.get(0).getName();
             String url = businesses.get(0).getImageUrl();
@@ -126,6 +127,7 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
             array = new ArrayList<>();
             for (Business business : businesses) {
                 array.add(new Data(business.getImageUrl(), business.getName(), business.getUrl()));
+
             }
 
 
@@ -146,9 +148,11 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
 
                 @Override
                 public void onRightCardExit(Object dataObject) {
+
                     Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(businesses.get(Data.count).getUrl()));
                     startActivity(browserIntent);
                     Data.increment();
+
 
                     array.remove(0);
                     myAppAdapter.notifyDataSetChanged();
@@ -157,6 +161,7 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
                 @Override
                 public void onAdapterAboutToEmpty(int itemsInAdapter) {
                     // Ask for more data here
+
                     Map<String, String> params = new HashMap<>();
 
 // general params
@@ -185,6 +190,7 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
                     for (Business business : businesses) {
                         array.add(new Data(business.getImageUrl(), business.getName(), business.getUrl()));
                     }
+
 
 
                 }
@@ -244,6 +250,24 @@ public class YelpSwipe extends AppCompatActivity implements OnConnectionFailedLi
             if (location != null) {
                 this.longi = (float) location.getLongitude();
                 this.lat = (float) location.getLatitude();
+            }
+        }
+    }
+
+    public void getLocation(){
+        LocationManager locManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+
+        boolean network_enabled = locManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        Location location;
+
+        if(network_enabled){
+
+            location = locManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+            if(location!=null){
+                this.longi = (float)location.getLongitude();
+                this.lat = (float)location.getLatitude();
             }
         }
     }
