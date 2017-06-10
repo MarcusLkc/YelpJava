@@ -7,7 +7,7 @@ Okay
 Have you heard of swiping?
 
 Yes?
-Ok we are making proress
+Ok we are making progess
 
 this App integrates Two of millenials favorite things...
 
